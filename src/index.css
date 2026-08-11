@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── LIVZO Resort Palette ── */
+  --color-forest: #173A32;
+  --color-forest-light: #1e4d42;
+  --color-moss: #28483D;
+  --color-sand: #D9C6A5;
+  --color-sand-dark: #c4ad8a;
+  --color-cream: #F4F0E7;
+  --color-offwhite: #FAF9F5;
+  --color-earth: #6B5140;
+  --color-charcoal: #1D2421;
+  --color-charcoal-light: #2a3330;
+
+  /* ── Font Families ── */
+  --font-serif: 'Cormorant Garamond', 'Georgia', serif;
+  --font-sans: 'DM Sans', 'Inter', system-ui, sans-serif;
+  --font-script: 'Caveat', cursive;
+}
+
+/* ── Base Resets ── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-offwhite);
+  color: var(--color-charcoal);
+  overflow-x: clip;
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+/* ── Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Selection ── */
+::selection {
+  background-color: #D9C6A5;
+  color: #173A32;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-offwhite);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-sand-dark);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-earth);
+}
