@@ -62,23 +62,23 @@ export default function CinematicHero() {
         s.mouseY = s.targetMouseY;
         s.initialized = true;
       } else {
-        // Lowered lerp value for silkier, smoother inertia
-        s.smoothScroll = lerp(s.smoothScroll, s.targetScroll, 0.08);
-        s.mouseX = lerp(s.mouseX, s.targetMouseX, 0.05);
-        s.mouseY = lerp(s.mouseY, s.targetMouseY, 0.05);
+        // Smooth but responsive — buttery parallax without lag
+        s.smoothScroll = lerp(s.smoothScroll, s.targetScroll, 0.14);
+        s.mouseX = lerp(s.mouseX, s.targetMouseX, 0.08);
+        s.mouseY = lerp(s.mouseY, s.targetMouseY, 0.08);
       }
 
       if (Math.abs(s.smoothScroll - s.targetScroll) < 0.01) s.smoothScroll = s.targetScroll;
 
-      // Compressed animation math for faster scroll completion (finishes in 800px)
-      const frame2 = segmentInOut(s.smoothScroll, 150, 350, 550, 700);
-      const progress = clamp(s.smoothScroll / 1000);
-      const introExit = smoothstep(50, 250, s.smoothScroll);
-      
+      // Smooth animation math — finishes in ~400px with gentle easing
+      const frame2 = segmentInOut(s.smoothScroll, 60, 180, 260, 380);
+      const progress = clamp(s.smoothScroll / 400);
+      const introExit = smoothstep(30, 140, s.smoothScroll);
+
       const blurActive = clamp(frame2.active); // Simplified since we removed frame3
       const frame2Opacity = frame2.active;
       const splitDrift = Math.pow(frame2.enter, 1.5);
-      
+
       const backScale = 0.76 + progress * 0.2 + frame2.enter * 0.18;
       const sharedHeroY = progress * -74;
       const sharedHeroScale = progress * 0.23;
@@ -129,7 +129,7 @@ export default function CinematicHero() {
       container.style.setProperty('--intro-copy-y', `${introExit * 90}px`);
       container.style.setProperty('--intro-copy-opacity', 1 - introExit);
 
-      const navEnter = smoothstep(650, 800, s.smoothScroll);
+      const navEnter = smoothstep(320, 400, s.smoothScroll);
       container.style.setProperty('--nav-y', `${(1 - navEnter) * 100}%`);
       container.style.setProperty('--nav-opacity', `${navEnter}`);
 
@@ -201,7 +201,7 @@ export default function CinematicHero() {
         </section>
 
         <div className="cinema-nav-wrapper">
-           <ExperienceNav />
+          <ExperienceNav />
         </div>
       </div>
     </section>

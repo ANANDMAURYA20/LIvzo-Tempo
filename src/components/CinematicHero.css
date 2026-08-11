@@ -10,7 +10,8 @@
 
 .cinema-scroll {
   position: relative;
-  height: calc(100vh + 800px); /* Compressed for much faster scrolling */
+  height: calc(100vh + 400px);
+  /* Compressed — minimal scroll needed */
   background: #0b1110;
   --blur-tint: 74, 181, 224;
 }
@@ -24,7 +25,8 @@
   transform: translate3d(0, var(--nav-y, 100%), 0);
   opacity: var(--nav-opacity, 0);
   will-change: transform, opacity;
-  background: #fdf1e1; /* Match cream background of ExperienceNav */
+  background: #fdf1e1;
+  /* Match cream background of ExperienceNav */
 }
 
 .cinema-stage {
@@ -129,9 +131,9 @@
   pointer-events: none;
   opacity: var(--shade-opacity, 1);
   background: linear-gradient(180deg,
-    rgba(var(--blur-tint), var(--shade-top-alpha, 0)) 0%,
-    rgba(var(--blur-tint), var(--shade-mid-alpha, 0)) 48%,
-    rgba(var(--blur-tint), var(--shade-bottom-alpha, 0)) 100%);
+      rgba(var(--blur-tint), var(--shade-top-alpha, 0)) 0%,
+      rgba(var(--blur-tint), var(--shade-mid-alpha, 0)) 48%,
+      rgba(var(--blur-tint), var(--shade-bottom-alpha, 0)) 100%);
 }
 
 .cinema-intro {
@@ -153,7 +155,7 @@
   font-size: 1.18rem;
   font-weight: 500;
   line-height: 1.18;
-  text-shadow: 0 2px 18px rgba(0,0,0,0.42);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.42);
 }
 
 .hero-tags {
@@ -175,26 +177,64 @@
   background: #fdf1e1;
   font-size: 0.98rem;
   font-weight: 500;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
 }
 
 @media (max-width: 1500px) {
-  .cinema-title { font-size: 11rem; }
+  .cinema-title {
+    font-size: 11rem;
+  }
 }
 
 @media (max-width: 1100px) {
-  .cinema-title { top: 15vh; font-size: 7.5rem; }
-  .bridge-img { width: 138vw; }
-  .frame-two-img { width: 132vw; }
+  .cinema-title {
+    top: 15vh;
+    font-size: 7.5rem;
+  }
+
+  .bridge-img {
+    width: 138vw;
+  }
+
+  .frame-two-img {
+    width: 132vw;
+  }
 }
 
 @media (max-width: 640px) {
-  .cinema-stage { min-height: 640px; }
-  .cinema-title { top: 16vh; font-size: 4.5rem; }
-  .bridge-img { bottom: 2vh; width: 190vw; }
-  .frame-two-img { width: 176vw; }
-  .cinema-intro { bottom: 42px; }
-  .cinema-intro p { font-size: 1rem; }
-  .hero-tags { gap: 8px; }
-  .hero-tags span { min-height: 38px; padding: 0 16px; font-size: 0.88rem; }
+  .cinema-stage {
+    min-height: 640px;
+  }
+
+  .cinema-title {
+    top: 16vh;
+    font-size: 4.5rem;
+  }
+
+  .bridge-img {
+    bottom: 2vh;
+    width: 190vw;
+  }
+
+  .frame-two-img {
+    width: 176vw;
+  }
+
+  .cinema-intro {
+    bottom: 42px;
+  }
+
+  .cinema-intro p {
+    font-size: 1rem;
+  }
+
+  .hero-tags {
+    gap: 8px;
+  }
+
+  .hero-tags span {
+    min-height: 38px;
+    padding: 0 16px;
+    font-size: 0.88rem;
+  }
 }
