@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import {
   adventurePackages,
@@ -12,6 +12,7 @@ import {
 } from '../data/packages';
 import { adventureCarouselItems } from '../data/adventures';
 import DepthCarousel from './DepthCarousel';
+import ExperienceTour, { TOUR_STEPS, TOUR_KEY } from './ExperienceTour';
 import './ExperienceExplorer.css';
 
 // ─── Data-driven tab definitions ───
@@ -355,6 +356,72 @@ const PANELS = {
 export default function ExperienceExplorer() {
   const [activeId, setActiveId] = useState(CATEGORIES[0].id);
   const tabsRef = useRef(null);
+  const sectionRef = useRef(null);
+
+  // ── Tour State ──
+  // phase: null | 'intro' | 'active' | 'complete'
+  const [tourPhase, setTourPhase] = useState(null);
+  const [tourStep, setTourStep] = useState(0);
+
+  // Check visibility for first-time users (low threshold so it triggers reliably on mobile)
+  const isInView = useInView(sectionRef, { amount: 0.15, once: true });
+
+  useEffect(() => {
+    if (isInView) {
+      const isCompleted = localStorage.getItem(TOUR_KEY) === 'true';
+      if (!isCompleted && !tourPhase) {
+        // Start tour directly on the first tab
+        const timer = setTimeout(() => {
+          setTourPhase('active');
+          setTourStep(0);
+        }, 500);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [isInView, tourPhase]);
+
+  // Sync manual tab clicks during the tour
+  const handleTabClick = (id) => {
+    setActiveId(id);
+    if (tourPhase === 'active') {
+      const matchingStepIndex = TOUR_STEPS.findIndex((s) => s.tabId === id);
+      if (matchingStepIndex !== -1) {
+        setTourStep(matchingStepIndex);
+      }
+    }
+  };
+
+  // Tour actions
+  const startTour = useCallback(() => {
+    setTourPhase('active');
+    setTourStep(0);
+    setActiveId(TOUR_STEPS[0].tabId);
+  }, []);
+
+  const nextTourStep = useCallback(() => {
+    const nextStep = tourStep + 1;
+    if (nextStep < TOUR_STEPS.length) {
+      setTourStep(nextStep);
+      setActiveId(TOUR_STEPS[nextStep].tabId);
+    } else {
+      setTourPhase('complete');
+      localStorage.setItem(TOUR_KEY, 'true');
+      setTimeout(() => setTourPhase(null), 2500);
+    }
+  }, [tourStep]);
+
+  const prevTourStep = useCallback(() => {
+    if (tourStep > 0) {
+      const prevStep = tourStep - 1;
+      setTourStep(prevStep);
+      setActiveId(TOUR_STEPS[prevStep].tabId);
+    }
+  }, [tourStep]);
+
+  const skipTour = useCallback(() => {
+    setTourPhase(null);
+    localStorage.setItem(TOUR_KEY, 'true');
+  }, []);
 
   // Scroll active tab into view on mobile
   useEffect(() => {
@@ -368,11 +435,20 @@ export default function ExperienceExplorer() {
   const ActivePanel = PANELS[activeId];
 
   return (
-    <section className="experience-section" id="experiences" aria-label="LIVZO Experiences">
-      <div className="container-editorial">
+    <section className="experience-section" id="experiences" aria-label="LIVZO Experiences" ref={sectionRef}>
+      <div className="container-editorial relative">
+
+        <ExperienceTour
+          phase={tourPhase}
+          tourStep={tourStep}
+          onStart={startTour}
+          onNext={nextTourStep}
+          onBack={prevTourStep}
+          onSkip={skipTour}
+        />
 
         {/* ── Section Header ── */}
-        <header className="mb-10 md:mb-14" style={{ maxWidth: '560px' }}>
+        <header className="mb-14 md:mb-16 text-center mx-auto relative z-10" style={{ maxWidth: '640px' }}>
           <p className="text-eyebrow text-earth mb-4" style={{ opacity: 0.5 }}>Experience</p>
           <h2 className="heading-section text-forest" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}>
             Choose how you want{' '}
@@ -381,31 +457,33 @@ export default function ExperienceExplorer() {
         </header>
 
         {/* ── Tab Navigation ── */}
-        <nav ref={tabsRef} className="experience-tabs mb-10 md:mb-14" aria-label="Experience categories">
-          {CATEGORIES.map((cat) => (
+        <div className="flex justify-center w-full mb-12 md:mb-16 relative z-10">
+          <nav ref={tabsRef} className="experience-tabs" aria-label="Experience categories">
+            {CATEGORIES.map((cat) => (
             <button
               key={cat.id}
               className="experience-tab"
               data-active={activeId === cat.id}
-              onClick={() => setActiveId(cat.id)}
+              onClick={() => handleTabClick(cat.id)}
               aria-selected={activeId === cat.id}
               role="tab"
+              tabIndex={tourPhase === 'intro' ? -1 : 0}
             >
-              {cat.label}
+              <span>{cat.label}</span>
               {activeId === cat.id && (
                 <motion.div
                   className="tab-indicator"
                   layoutId="tabIndicator"
-                  style={{ left: 0, right: 0 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 35 }}
                 />
               )}
             </button>
           ))}
-        </nav>
+          </nav>
+        </div>
 
         {/* ── Content Panel ── */}
-        <div style={{ minHeight: '420px' }}>
+        <div style={{ minHeight: '420px' }} className="relative z-10">
           <AnimatePresence mode="wait">
             <ActivePanel key={activeId} />
           </AnimatePresence>
